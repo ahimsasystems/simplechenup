@@ -1,9 +1,6 @@
 This project contains a minimal chenup project.
 
-1. Create a docker postgres container: docker run --name chenup-postgres \
-    -e POSTGRES_PASSWORD=mysecretpassword \
-    -p 5432:5432 \
-    -d postgres
+1. Create a docker postgres container: docker run --name chenup-postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -d postgres
 2. Save this project in a convenient location. We will refer to this as simplechenup from this point on.
 3. cd simplechenup
 4. Run the database initialization script: docker exec -i chenup-postgres psql -U postgres -d postgres < init.sql
