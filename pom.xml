@@ -15,7 +15,7 @@
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
     </properties>
 
-<!--
+
 
     <repositories>
         <repository>
@@ -25,10 +25,11 @@
             <snapshots><enabled>true</enabled></snapshots>
         </repository>
     </repositories>
--->
 
 
 
+
+<!--
 
     <repositories>
         <repository>
@@ -42,6 +43,7 @@
             </snapshots>
         </repository>
     </repositories>
+-->
 
 
 
