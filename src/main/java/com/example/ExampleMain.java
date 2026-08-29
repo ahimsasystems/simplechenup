@@ -1,7 +1,6 @@
 package com.example;
 
 import com.ahimsasystems.chenup.core.PersistenceInitializer;
-import com.ahimsasystems.chenup.core.PersistenceManager;
 import com.ahimsasystems.chenup.postgresdb.PostgresContext;
 import com.ahimsasystems.chenup.postgresdb.PostgresPersistenceManager;
 
@@ -9,12 +8,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ServiceLoader;
 import java.util.UUID;
-import java.util.Vector;
 
 public class ExampleMain {
-
 
 
 //    private static final String URL =
@@ -90,27 +86,24 @@ public class ExampleMain {
         persistenceManager.push(context);
 
 
-            p1.setName("Jane Doe " + 1);
+        p1.setName("Jane Doe " + 1);
 
+        persistenceManager.push(context);
+
+        UUID uuid = p1.getId();
+
+        Person p1old = p1;
+
+
+        p1 = (Person) persistenceManager.read(uuid, Person.class, context);
+
+        System.out.println("p1old = p1 " + (p1old == p1));
+
+
+        for (int i = 0; i < 10; i++) {
+            p1.setName("Jane Doe " + i);
             persistenceManager.push(context);
-
-            UUID uuid = p1.getId();
-
-            Person p1old = p1;
-
-
-            p1 = (Person) persistenceManager.read(uuid, Person.class, context);
-
-            System.out.println("p1old = p1 " + (p1old == p1));
-
-
-            for (int i = 0; i < 10; i++) {
-                p1.setName("Jane Doe " + i);
-                persistenceManager.push(context);
-            }
-
-
-
+        }
 
 
         try {
@@ -118,10 +111,6 @@ public class ExampleMain {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
-
-
 
 
 //
