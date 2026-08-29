@@ -1,6 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS chenup;
 
-SET search_path TO chenup, public;
 
 
 -- ============================================================================
@@ -75,8 +74,7 @@ alter function chenup.increment_thing_version() owner to postgres;
 create type chenup.person_name as
 (
     given_name text,
-    sur_name   text,
-    alias      boolean
+    sur_name   text
 );
 
 alter type chenup.person_name owner to postgres;
@@ -88,10 +86,8 @@ create table if not exists chenup.person
         primary key
         references chenup.thing
             on delete cascade,
-    name          text,
-    birth_date    date,
-    separate_name chenup.person_name,
-    birth_instant timestamp with time zone
+    name chenup.person_name,
+    birth_date    date
 );
 
 alter table chenup.person
@@ -173,8 +169,7 @@ create table if not exists chenup.employment
         references chenup.thing
             on delete cascade,
     start_date      date,
-    end_date        date,
-    start_date_time timestamp with time zone
+    end_date        date
 );
 
 alter table chenup.employment

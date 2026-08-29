@@ -27,9 +27,4 @@ public interface Employment extends PersistenceCapable {
 
     void setEndDate(LocalDate endDate);
 
-    void setStartDateTime(java.time.Instant startDateTime );
-
-    java.time.Instant getStartDateTime();
-
-
 }

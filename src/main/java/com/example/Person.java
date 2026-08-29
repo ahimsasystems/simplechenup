@@ -13,21 +13,11 @@ import java.time.ZoneId;
 @Entity
 public interface Person extends PersistenceCapable
 {
-    // Should the IDs be exposed to the user?
-    // UUID getId();
-    // void setId(UUID id);
-
-    String getName();
-    void setName(String name);
-
     LocalDate getBirthDate();
     void setBirthDate(LocalDate birthDate);
 
-    Instant getBirthInstant();
-    void setBirthInstant(Instant birthInstant);
-
-    PersonName getSeparateName();
-    void setSeparateName(PersonName separatedName);
+    PersonName getName();
+    void setName(PersonName separatedName);
 
     default int age() {
         ZoneId zone = ZoneId.systemDefault();
