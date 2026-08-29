@@ -13,12 +13,6 @@ import java.util.UUID;
 
 public class ExampleMain {
 
-
-//    private static final String URL =
-//            "jdbc:postgresql://10.211.55.20:5432/accounts";
-//    private static final String USER = "postgres";
-//    private static final String PASSWORD = "mysecretpassword";
-
     private static final String URL =
             "jdbc:postgresql://localhost:5432/postgres?currentSchema=chenup";
     private static final String USER = "postgres";
@@ -26,21 +20,8 @@ public class ExampleMain {
 
     public static void main(String[] args) throws Exception {
 
-        System.out.println("Hello World!");
-
         PostgresPersistenceManager persistenceManager =
                 new PostgresPersistenceManager();
-
-//        var persistenceInitializer =
-//                new MyPersistenceInitializer();
-
-
-//        PersistenceInitializer persistenceInitializer =
-//                ServiceLoader.load(PersistenceInitializer.class)
-//                        .findFirst()
-//                        .orElseThrow(() ->
-//                                new IllegalStateException(
-//                                        "No PersistenceInitializer found"));
 
         PersistenceInitializer persistenceInitializer =
                 (PersistenceInitializer)
@@ -80,31 +61,67 @@ public class ExampleMain {
 
         Person p1 = (Person) persistenceManager.create(Person.class);
 
-        p1.setName(new PersonName("John", "Doe"));
+        p1.setName(new PersonName("John", "Smith"));
         p1.setBirthDate(LocalDate.of(2000, 1, 1));
 
+        Organization org = (Organization) persistenceManager.create(Organization.class);
+        org.setName("ACME, Inc.");
+
+        // Push to the database. Note that this does not flush the cache or commit the transaction.
         persistenceManager.push(context);
 
-
+        // Note that in 0.1.0, it is safest to push new entities before creating associations.
+        // This is listed as a bug which is planned to be fixed in 0.1.1.
 
         persistenceManager.push(context);
 
-        UUID uuid = p1.getId();
+        Employment employment = (Employment) persistenceManager.create(Employment.class);
+        employment.setEmployee(p1);
+        employment.setEmployer(org);
+        employment.setStartDate(LocalDate.of(2010, 1, 1));
+        employment.setEndDate(LocalDate.of(2015, 1, 1));
 
-        Person p1old = p1;
+        // Push to the database. Note that this does not flush the cache or commit the transaction.
+        // You must push to the database for the find method to work.
+        persistenceManager.push(context);
+
+        // Currently, queries are required to return a list of IDs.
+        // Obviously, such query strings should not be taken directly from user input without sanitization.
+        String queryString =
+            """
+            SELECT e.id
+            FROM employment e
+            JOIN person p ON e.employee = p.id
+            WHERE (p.name).sur_name = 'Smith'
+            """;
+
+        var results = persistenceManager.find(queryString, context);
+
+        System.out.println("results = " + results);
+        for (var result: results){
+            var employmentRead = (Employment) persistenceManager.read(result, Employment.class, context);
+            System.out.println("employment id = " + employmentRead.getId());
+            System.out.println("employment employee = " + employmentRead.getEmployee().getName());
+            System.out.println("employment employer = " + employmentRead.getEmployer().getName());
+            System.out.println("employment employee name = " + employmentRead.getEmployee().getName());
+            System.out.println("employment employee id = " + employmentRead.getEmployee().getId());
+
+        }
+
+        // Update employment to show that the version of the association is incremented, but not of the person or organization.
+        employment.setEndDate(LocalDate.of(2025, 1, 1));
+
+        persistenceManager.push(context);
+        System.out.println("p1 version = " + ((PersonImpl)p1).getMetaData().getVersion());
+        System.out.println("org version = " + ((OrganizationImpl)org).getMetaData().getVersion());
+
+
+        System.out.println("employment version = " + ((EmploymentImpl)employment).getMetaData().getVersion());
 
 
 
 
-        p1 = (Person) persistenceManager.read(uuid, Person.class, context);
 
-        System.out.println("p1old = p1 " + (p1old == p1));
-
-
-
-
-
-        persistenceManager.flush(context);
 
 
 
